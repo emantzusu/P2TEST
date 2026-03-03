@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Payment Summary</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; padding: 40px; background: #eceff1; }
+        .calc-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; }
+        h2 { margin-top: 0; color: #2c3e50; text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: bold; color: #546e7a; }
+        input { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #cfd8dc; border-radius: 6px; outline: none; transition: border-color 0.3s; }
+        input:focus { border-color: #007bff; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+        
+        /* Result Styling */
+        .result-box { margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 5px solid #28a745; display: none; }
+        .summary-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #455a64; }
+        .summary-line { border-bottom: 1px solid #dee2e6; margin: 10px 0; }
+        .final-payment { text-align: center; }
+        .final-payment span { display: block; font-size: 1.8rem; font-weight: bold; color: #28a745; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="calc-card">
+    <h2>Payment Calculator</h2>
+    
+    <div class="input-group">
+        <label>Loan Amount</label>
+        <input type="number" id="amount" placeholder="e.g. 50000">
+    </div>
+
+    <div class="input-group">
+        <label>Annual Interest Rate (%)</label>
+        <input type="number" id="interest" step="0.01" placeholder="e.g. 4.5">
+    </div>
+
+    <div class="input-group">
+        <label>Loan Term (Years)</label>
+        <input type="number" id="years" placeholder="e.g. 5">
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="result-box" id="resultBox">
+        <div class="summary-item"><span>Principal:</span> <span id="outAmount"></span></div>
+        <div class="summary-item"><span>Rate:</span> <span id="outRate"></span></div>
+        <div class="summary-item"><span>Term:</span> <span id="outTerm"></span></div>
+        <div class="summary-line"></div>
+        <div class="final-payment">
+            <label>Monthly Payment</label>
+            <span id="monthlyPayment">$0.00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        // 1. Get Values
+        const amount = document.getElementById('amount').value;
+        const interest = document.getElementById('interest').value;
+        const years = document.getElementById('years').value;
+
+        // 2. Perform Math
+        const principal = parseFloat(amount);
+        const monthlyRate = parseFloat(interest) / 100 / 12;
+        const totalPayments = parseFloat(years) * 12;
+
+        const x = Math.pow(1 + monthlyRate, totalPayments);
+        const monthly = (principal * x * monthlyRate) / (x - 1);
+
+        // 3. Validation and Display
+        if (isFinite(monthly) && monthly > 0) {
+            // Update the summary inputs
+            document.getElementById('outAmount').innerText = '$' + principal.toLocaleString();
+            document.getElementById('outRate').innerText = interest + '%';
+            document.getElementById('outTerm').innerText = years + ' Years';
+            
+            // Update final payment
+            document.getElementById('monthlyPayment').innerText = '$' + monthly.toFixed(2);
+            
+            // Show the box
+            document.getElementById('resultBox').style.display = 'block';
+        } else {
+            alert('Please enter valid positive numbers in all fields.');
+        }
+    }
+</script>
+
+</body>
+</html>
